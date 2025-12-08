@@ -16,13 +16,13 @@
   - **Security:** `argon2` (hashing), `jose` (JWT), `zod` (validation).
   - **Email:** `resend`.
 
-- [ ] **1.3 Database Setup:**
+- [x] **1.3 Database Setup:**
 
   - Define `User` and `VerificationToken` models in `schema.prisma`.
   - Run `prisma migrate dev` to create tables in PostgreSQL.
   - Generate Prisma Client (`prisma generate`).
 
-- [ ] **1.4 Global Utilities:**
+- [x] **1.4 Global Utilities:**
   - Create `lib/db.ts` to export a singleton Prisma instance (prevents connection exhaustion in dev).
 
 ---

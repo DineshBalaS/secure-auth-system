@@ -51,4 +51,5 @@ next-env.d.ts
 # Prisma
 generated/prisma/
 
-.scripts
+# Scripts
+scripts/
