@@ -31,17 +31,17 @@
 
 **Goal:** Implement the cryptographic and session logic in isolation. Do not write API routes yet.
 
-- [ ] **2.1 Validation Schemas (`lib/validations.ts`):**
+- [x] **2.1 Validation Schemas (`lib/validations.ts`):**
 
   - Define Zod schema for Registration (email regex, password min length).
   - Define Zod schema for Login.
 
-- [ ] **2.2 Password Utility (`lib/auth/password.ts`):**
+- [x] **2.2 Password Utility (`lib/auth/password.ts`):**
 
   - Implement `hashPassword(plain)`: Generate salt + Argon2id hash.
   - Implement `verifyPassword(hash, plain)`: Secure comparison logic.
 
-- [ ] **2.3 Session Utility (`lib/auth/session.ts`):**
+- [x] **2.3 Session Utility (`lib/auth/session.ts`):**
   - Implement `signToken(payload)`: Create JWT using `jose`.
   - Implement `verifyToken(token)`: Validate signature and expiry.
 
