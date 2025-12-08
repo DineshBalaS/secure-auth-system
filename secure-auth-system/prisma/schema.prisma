@@ -1,0 +1,32 @@
+// secure-auth-system/prisma/schema.prisma
+
+generator client {
+  provider = "prisma-client-js"
+  previewFeatures = ["driverAdapters"]
+}
+
+datasource db {
+  provider = "postgresql"
+}
+
+// Model: User
+model User {
+  id             String              @id @default(uuid())
+  email          String              @unique
+  password       String
+  isVerified     Boolean             @default(false)
+  createdAt      DateTime            @default(now())
+  
+  verificationTokens VerificationToken[]
+}
+
+// Model: VerificationToken
+model VerificationToken {
+  id         String   @id @default(uuid())
+  identifier String
+  token      String   @unique
+  expires    DateTime
+  
+  userId     String
+  user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
+}

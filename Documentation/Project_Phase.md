@@ -4,13 +4,13 @@
 
 **Goal:** Initialize the environment and establish the database connection.
 
-- [ ] **1.1 Project Initialization:**
+- [x] **1.1 Project Initialization:**
 
   - Initialize Next.js 15 (App Router, TypeScript).
   - Configure `tsconfig.json` for strict mode.
   - Setup `.env` file structure (ensure `.gitignore` includes it).
 
-- [ ] **1.2 Dependency Installation:**
+- [x] **1.2 Dependency Installation:**
 
   - **Core:** `prisma`, `@prisma/client`
   - **Security:** `argon2` (hashing), `jose` (JWT), `zod` (validation).
