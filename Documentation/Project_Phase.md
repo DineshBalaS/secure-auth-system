@@ -51,19 +51,19 @@
 
 **Goal:** Build the HTTP interface. Use Postman/Curl for preliminary testing.
 
-- [ ] **3.1 Registration Endpoint (`/api/auth/register`):**
+- [x] **3.1 Registration Endpoint (`/api/auth/register`):**
 
   - Validate input -> Check duplicates -> Hash password -> Create User -> Send Email.
 
-- [ ] **3.2 Verification Endpoint (`/api/auth/verify`):**
+- [x] **3.2 Verification Endpoint (`/api/auth/verify`):**
 
   - Validate token -> Update User (`isVerified: true`) -> Delete Token.
 
-- [ ] **3.3 Login Endpoint (`/api/auth/login`):**
+- [x] **3.3 Login Endpoint (`/api/auth/login`):**
 
   - Find User -> Verify Hash -> Check Verified Status -> Set `HttpOnly` Cookie.
 
-- [ ] **3.4 Session & Logout:**
+- [x] **3.4 Session & Logout:**
   - `/api/auth/me`: Decrypt cookie and return user data.
   - `/api/auth/logout`: Delete cookie.
 
