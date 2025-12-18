@@ -4,7 +4,7 @@ import { Eye, EyeOff } from "lucide-react";
 
 export interface InputProps
   extends React.InputHTMLAttributes<HTMLInputElement> {
-  name: string;
+  name: string; // Enforce name for form handling
 }
 
 const Input = React.forwardRef<HTMLInputElement, InputProps>(
@@ -24,19 +24,18 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           type={displayedType}
           className={cn(
             // Layout & Base
-            "flex h-11 w-full rounded-lg px-3 py-2 text-sm transition-all duration-300",
-            // Glass / Transparent Style
-            "bg-black/20 border border-white/10 text-white placeholder:text-gray-400",
-            "backdrop-blur-sm",
-            // Hover State
-            "hover:bg-black/30 hover:border-white/20",
-            // Focus State (The Glow)
-            "focus-visible:outline-none focus-visible:ring-1 focus-visible:ring-violet-500",
-            "focus-visible:border-violet-500/50 focus-visible:bg-black/40",
-            "focus-visible:shadow-[0_0_15px_rgba(139,92,246,0.3)]",
-            // Disabled
+            "flex h-12 w-full rounded-lg px-3 py-2 text-sm transition-all duration-200",
+
+            // Visual Style: Clean White & Gray
+            "bg-white border border-gray-200 text-gray-900 placeholder:text-gray-500",
+
+            // Focus State: High Contrast Black Ring (No Glow)
+            "focus-visible:outline-none focus-visible:ring-2 focus-visible:ring-gray-900 focus-visible:border-transparent",
+
+            // Disabled State
             "disabled:cursor-not-allowed disabled:opacity-50",
-            // Add right padding for the icon
+
+            // Padding adjustment for password icon
             isPassword && "pr-10",
             className
           )}
@@ -47,13 +46,14 @@ const Input = React.forwardRef<HTMLInputElement, InputProps>(
           <button
             type="button"
             onClick={() => setShowPassword((prev) => !prev)}
-            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-400 hover:text-gray-200 transition-colors"
+            className="absolute inset-y-0 right-0 flex items-center pr-3 text-gray-500 hover:text-gray-900 transition-colors focus:outline-none"
             aria-label={showPassword ? "Hide password" : "Show password"}
+            tabIndex={-1} // Skip tab focus for the eye icon to keep flow smooth
           >
             {showPassword ? (
-              <EyeOff className="h-4 w-4" />
+              <EyeOff className="h-5 w-5" />
             ) : (
-              <Eye className="h-4 w-4" />
+              <Eye className="h-5 w-5" />
             )}
           </button>
         )}
