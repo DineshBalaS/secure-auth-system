@@ -4,7 +4,7 @@ import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
-import { AlertTriangle, CheckCircle, ChevronLeft } from "lucide-react";
+import { AlertTriangle, CheckCircle } from "lucide-react";
 
 // Import Schema and Types
 import { LoginSchema, type LoginInput } from "@/lib/validations";
@@ -109,17 +109,6 @@ export function LoginForm({ message }: LoginFormProps) {
 
   return (
     <div className="w-full space-y-8">
-      {/* Top Navigation */}
-      <div className="flex items-center">
-        <Link
-          href="/"
-          className="group flex items-center text-sm font-medium text-gray-500 hover:text-gray-900 transition-colors"
-        >
-          <ChevronLeft className="mr-1 h-4 w-4 transition-transform group-hover:-translate-x-1" />
-          Back to website
-        </Link>
-      </div>
-
       {/* Header Section */}
       <div className="space-y-2 text-left">
         <h1 className="text-4xl font-bold tracking-tight text-gray-900">
@@ -247,6 +236,16 @@ export function LoginForm({ message }: LoginFormProps) {
             </svg>
             Log in with Facebook
           </Button>
+        </div>
+        {/* Register Link Footer */}
+        <div className="text-center text-sm">
+          <span className="text-gray-500">Don&apos;t have an account? </span>
+          <Link
+            href="/register"
+            className="font-bold text-gray-900 hover:underline underline-offset-4"
+          >
+            Sign up
+          </Link>
         </div>
       </form>
     </div>
