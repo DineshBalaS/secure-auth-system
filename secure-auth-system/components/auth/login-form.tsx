@@ -31,7 +31,7 @@ export function LoginForm({ message }: LoginFormProps) {
       email: "",
       password: "",
     },
-    mode: "onBlur",
+    mode: "onChange",
   });
 
   const {
