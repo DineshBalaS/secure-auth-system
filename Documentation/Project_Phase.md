@@ -73,18 +73,18 @@
 
 **Goal:** Build the user interface and connect it to the API.
 
-- [ ] **4.1 Layouts:**
+- [x] **4.1 Layouts:**
 
   - Create `(auth)/layout.tsx` for centered forms.
   - Create `(protected)/layout.tsx` with Navbar and Logout button.
 
-- [ ] **4.2 Auth Forms:**
+- [x] **4.2 Auth Forms:**
 
   - Build `LoginForm` and `RegisterForm` components.
   - Integrate `react-hook-form` with Zod resolvers.
   - Handle loading states and error messages (toast notifications).
 
-- [ ] **4.3 Pages:**
+- [x] **4.3 Pages:**
   - Assemble `/login`, `/register`, and `/verify` pages.
   - Create the `/dashboard` page (shows user email).
 
