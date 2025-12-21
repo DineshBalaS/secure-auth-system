@@ -1,71 +1,79 @@
 import { NextResponse } from "next/server";
 import { prisma } from "@/lib/db";
-import { VerifyEmailSchema } from "@/lib/validations";
 
 export async function POST(req: Request) {
   try {
-    // 1. Parse and Validate Request Body
     const body = await req.json();
-    const validation = VerifyEmailSchema.safeParse(body);
+    const { token } = body;
 
-    if (!validation.success) {
+    // 1. Input Validation
+    if (!token || typeof token !== "string") {
       return NextResponse.json(
-        {
-          error: "Invalid request",
-          details: validation.error.flatten().fieldErrors,
-        },
+        { error: "Missing or invalid token" },
         { status: 400 }
       );
     }
 
-    const { token } = validation.data;
-
-    // 2. Find the Token in Database
-    // We look up by the 'token' field which is marked @unique in schema.prisma
-    const verificationToken = await prisma.verificationToken.findUnique({
+    // 2. Find the token in the database
+    const existingToken = await prisma.verificationToken.findUnique({
       where: { token },
     });
 
-    // 3. Scenario 2.2: Token Not Found
-    if (!verificationToken) {
+    if (!existingToken) {
+      return NextResponse.json({ error: "Invalid token" }, { status: 400 });
+    }
+
+    // 3. Check for Expiration
+    const hasExpired = new Date(existingToken.expires) < new Date();
+
+    if (hasExpired) {
+      // Optional: Cleanup expired token immediately to keep DB clean
+      await prisma.verificationToken.delete({
+        where: { id: existingToken.id },
+      });
+
       return NextResponse.json(
-        { error: "Invalid verification token" },
+        { error: "Token has expired. Please request a new one." },
         { status: 400 }
       );
     }
 
-    // 4. Scenario 2.2: Token Expired
-    // Check if the expiration date has passed
-    if (new Date() > verificationToken.expires) {
+    // 4. Find the user associated with this token
+    // We use the identifier (email) stored in the token to link back to the user
+    const existingUser = await prisma.user.findUnique({
+      where: { email: existingToken.identifier },
+    });
+
+    if (!existingUser) {
       return NextResponse.json(
-        {
-          error: "Token has expired. Please request a new verification email.",
-        },
-        { status: 400 }
+        { error: "User associated with this token no longer exists" },
+        { status: 404 }
       );
     }
 
-    // 5. Scenario 2.1: Success (Atomic Update)
-    // We update the user and delete the token in a single transaction
+    // 5. Atomic Transaction: Verify User & Delete Token
+    // We do this in a transaction to prevent race conditions or partial updates
     await prisma.$transaction([
-      // Update User status
       prisma.user.update({
-        where: { id: verificationToken.userId },
-        data: { isVerified: true },
+        where: { id: existingUser.id },
+        data: {
+          isVerified: true,
+          // If you decide to add emailVerified DateTime later, add it here:
+          // emailVerified: new Date()
+        },
       }),
-      // Cleanup: Delete the used token to prevent replay attacks
       prisma.verificationToken.delete({
-        where: { id: verificationToken.id },
+        where: { id: existingToken.id },
       }),
     ]);
 
     // 6. Success Response
     return NextResponse.json(
-      { message: "Email verified successfully. You can now login." },
+      { message: "Email verified successfully" },
       { status: 200 }
     );
   } catch (error) {
-    console.error("[VERIFY_ERROR]", error);
+    console.error("[VERIFY_EMAIL_ERROR]", error);
     return NextResponse.json(
       { error: "Internal Server Error" },
       { status: 500 }
