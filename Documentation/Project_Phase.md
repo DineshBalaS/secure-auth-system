@@ -42,8 +42,13 @@
   - Implement `verifyPassword(hash, plain)`: Secure comparison logic.
 
 - [x] **2.3 Session Utility (`lib/auth/session.ts`):**
+
   - Implement `signToken(payload)`: Create JWT using `jose`.
   - Implement `verifyToken(token)`: Validate signature and expiry.
+
+- [x] **2.4 Email Utility (Enhanced) (`lib/email/send-email.ts`):**
+  - **Unplanned Addition:** Replaced raw text emails with a branded, responsive HTML template using `Resend`.
+  - Implemented development mode fallback (logs to console).
 
 ---
 
@@ -54,6 +59,7 @@
 - [x] **3.1 Registration Endpoint (`/api/auth/register`):**
 
   - Validate input -> Check duplicates -> Hash password -> Create User -> Send Email.
+  - **Update:** Integrated with the new HTML email template.
 
 - [x] **3.2 Verification Endpoint (`/api/auth/verify`):**
 
@@ -106,11 +112,11 @@
 
 ### 6.1 Unit Testing (The Logic)
 
-**Target:** `lib/auth/*`
+**Target:** `lib/auth/*` and `lib/__tests__/*`
 
-- [ ] Test: Verify `hashPassword` produces a different hash for the same password (salt check).
-- [ ] Test: Verify `verifyToken` rejects expired tokens.
-- [ ] Test: Verify Zod schemas reject invalid emails (e.g., "user@domain").
+- [x] Test: Verify `hashPassword` produces a different hash for the same password (salt check).
+- [x] Test: Verify `verifyToken` rejects expired tokens.
+- [x] Test: Verify Zod schemas reject invalid emails (e.g., "user@domain").
 
 ### 6.2 Integration Testing (The Flow)
 
