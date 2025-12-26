@@ -48,6 +48,7 @@ export async function POST(req: Request) {
     // 5. Atomic Creation (Transaction)
     // We create the User and the VerificationToken in a single database call.
     // If the token creation fails, the user will not be created.
+    console.log("[REGISTER_DEBUG] Creating DB User...");
     const newUser = await prisma.user.create({
       data: {
         email,
@@ -62,11 +63,14 @@ export async function POST(req: Request) {
         },
       },
     });
+    console.log(`[REGISTER_DEBUG] User created! ID: ${newUser.id}`);
 
     // 6. Send Verification Email (Side Effect)
+    console.log(`[REGISTER_DEBUG] Starting Email Send for ${email}...`);
     // We await this to ensure the user isn't left wondering if it worked,
     // though in high-scale apps this might be offloaded to a background queue.
     await sendVerificationEmail(newUser.email, verificationToken);
+    console.log("[REGISTER_DEBUG] Email sent successfully. Returning 201.");
 
     // 7. Success Response
     return NextResponse.json(
