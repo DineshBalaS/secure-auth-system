@@ -11,6 +11,12 @@ const transporter = nodemailer.createTransport({
     user: process.env.GMAIL_USER,
     pass: process.env.GMAIL_APP_PASSWORD,
   },
+  // DEBUG CONFIGURATION
+  logger: true, // Log SMTP traffic to console
+  debug: true, // Include detailed debug info
+  connectionTimeout: 5000, // Fail after 5 seconds (don't hang forever)
+  greetingTimeout: 5000, // Fail if server doesn't say "Hello" in 5s
+  socketTimeout: 5000, // Fail if socket hangs
 });
 
 /**
@@ -26,13 +32,19 @@ export async function sendVerificationEmail(email: string, token: string) {
     console.log(`To: ${email}`);
     console.log(`Link: ${confirmLink}`);
     console.log("----------------------------------------------");
+  } else {
+    // Production Logging Sanity Check
+    console.log("📧 [PROD MODE] Attempting to send email...");
+    console.log(
+      `📧 Configured Sender: ${process.env.GMAIL_USER ? "Set" : "MISSING"}`
+    );
   }
 
   try {
     // 3. Send the Email
     // The 'from' address uses your GMAIL_USER env var
     const info = await transporter.sendMail({
-      from: `"Secure Auth Portfolio" <${process.env.GMAIL_USER}>`,
+      from: `"Secure Auth Service" <${process.env.GMAIL_USER}>`,
       to: email,
       subject: "Action Required: Verify your email address",
       html: `
