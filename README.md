@@ -32,5 +32,3 @@ The system adheres to strict security protocols to prevent common vulnerabilitie
     * `Secure`: Ensures cookies are only sent over HTTPS.
     * `SameSite='Strict'`: Prevents Cross-Site Request Forgery (CSRF).
 3.  **Environment Isolation**: Strict separation of secrets (`JWT_SECRET`, `DB_URL`) via environment variables.
-
----
