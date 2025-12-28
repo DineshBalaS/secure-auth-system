@@ -30,3 +30,17 @@ model VerificationToken {
   userId     String
   user       User     @relation(fields: [userId], references: [id], onDelete: Cascade)
 }
+
+ // Model: PasswordResetToken
+ // Used for: specific storage for short-lived reset tokens
+ model PasswordResetToken {
+   id         String   @id @default(uuid())
+   identifier String
+   token      String   @unique
+   expires    DateTime
+   createdAt  DateTime @default(now())
+ 
+   // Ensure unique pair to prevent duplicate active tokens if needed, 
+   // though logic handles this by invalidating old ones.
+   @@unique([identifier, token])
+ }
