@@ -34,19 +34,3 @@ The system adheres to strict security protocols to prevent common vulnerabilitie
 3.  **Environment Isolation**: Strict separation of secrets (`JWT_SECRET`, `DB_URL`) via environment variables.
 
 ---
-
-## 📂 Project Structure
-The project follows a modular feature-based architecture within the Next.js App Router.
-
-```text
-/
-├── app/
-│   ├── (auth)/             # Public auth routes (Login, Register, Verify)
-│   ├── (protected)/        # Authenticated routes (Dashboard)
-│   └── api/auth/           # Backend API routes (Login, Logout, Me)
-├── lib/
-│   ├── auth/               # Low-level security logic (Argon2, JOSE)
-│   ├── db.ts               # Global Prisma instance
-│   └── validations.ts      # Zod schemas
-├── prisma/                 # Database schema
-└── middleware.ts           # Edge middleware for session protection
