@@ -7,7 +7,6 @@ import Link from "next/link";
 import { ForgotPasswordSchema, ForgotPasswordInput } from "@/lib/validations";
 import { Input } from "@/components/ui/input";
 import { Button } from "@/components/ui/button";
-import { GlassCard } from "@/components/ui/glass-card";
 
 export default function ForgotPasswordPage() {
   const [serverError, setServerError] = useState<string | null>(null);
@@ -46,46 +45,53 @@ export default function ForgotPasswordPage() {
   };
 
   return (
-    <GlassCard className="w-full max-w-md p-8">
-      <h1 className="text-2xl font-bold text-center mb-2 text-white">
-        Reset Password
-      </h1>
-      <p className="text-gray-400 text-center mb-6 text-sm">
-        Enter your email to receive a reset link.
-      </p>
+    <div className="w-full space-y-6">
+      <div className="flex flex-col space-y-2 text-center">
+        <h1 className="text-2xl font-semibold tracking-tight text-gray-900">
+          Reset Password
+        </h1>
+        <p className="text-sm text-gray-500">
+          Enter your email to receive a reset link.
+        </p>
+      </div>
 
       {successMessage ? (
-        <div className="text-center bg-green-900/30 p-4 rounded-md border border-green-500/30">
-          <p className="text-green-400 mb-4 text-sm">{successMessage}</p>
-          <Link
-            href="/login"
-            className="text-blue-400 hover:text-blue-300 text-sm font-semibold"
-          >
-            &larr; Back to Login
-          </Link>
+        <div className="rounded-md bg-green-50 p-4 border border-green-200">
+          <div className="flex flex-col items-center justify-center text-center">
+            <p className="text-sm font-medium text-green-800 mb-2">
+              {successMessage}
+            </p>
+            <Link
+              href="/login"
+              className="text-sm font-medium text-green-700 hover:text-green-900 hover:underline"
+            >
+              &larr; Back to Login
+            </Link>
+          </div>
         </div>
       ) : (
         <form onSubmit={handleSubmit(onSubmit)} className="space-y-4">
           <div>
-            <label className="block text-sm font-medium text-gray-200 mb-1">
+            <label className="block text-sm font-medium text-gray-700 mb-1">
               Email Address
             </label>
             <Input
               {...register("email")}
               placeholder="name@example.com"
               type="email"
+              className="bg-white text-gray-900 border-gray-300 focus:ring-gray-900"
             />
             {errors.email && (
-              <p className="text-red-400 text-xs mt-1">
+              <p className="text-red-600 text-xs mt-1">
                 {errors.email.message}
               </p>
             )}
           </div>
 
           {serverError && (
-            <p className="text-red-400 text-sm text-center bg-red-900/20 p-2 rounded">
+            <div className="rounded-md bg-red-50 p-3 text-sm text-red-600 border border-red-200 text-center">
               {serverError}
-            </p>
+            </div>
           )}
 
           <Button type="submit" disabled={isSubmitting} className="w-full">
@@ -95,13 +101,13 @@ export default function ForgotPasswordPage() {
           <div className="text-center mt-4">
             <Link
               href="/login"
-              className="text-sm text-gray-400 hover:text-white transition-colors"
+              className="text-sm text-gray-500 hover:text-gray-900 transition-colors hover:underline"
             >
               Back to Login
             </Link>
           </div>
         </form>
       )}
-    </GlassCard>
+    </div>
   );
 }
