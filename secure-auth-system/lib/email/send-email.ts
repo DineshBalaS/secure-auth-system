@@ -121,3 +121,99 @@ export async function sendVerificationEmail(email: string, token: string) {
     throw new Error("Failed to send verification email");
   }
 }
+
+/**
+ * Sends a password reset email via Brevo HTTP API.
+ */
+export async function sendPasswordResetEmail(email: string, token: string) {
+  // 1. Validate Configuration
+  const apiKey = process.env.BREVO_API_KEY;
+  const senderEmail = process.env.SENDER_EMAIL;
+
+  if (!apiKey || !senderEmail) {
+    console.error("❌ [EMAIL ERROR] Missing BREVO env variables.");
+    throw new Error("Email service is not configured properly.");
+  }
+
+  // Construct the secure reset link
+  const resetLink = `${domain}/reset-password?token=${token}`;
+
+  console.log(`📧 [BREVO] Preparing to send reset email to: ${email}`);
+
+  // 2. Build the HTML Content (Reusing existing visual style)
+  const htmlContent = `
+     <!DOCTYPE html>
+     <html>
+     <head>
+       <meta charset="utf-8">
+       <meta name="viewport" content="width=device-width, initial-scale=1.0">
+       <title>Reset your password</title>
+     </head>
+     <body style="margin: 0; padding: 0; background-color: #f4f4f4; font-family: Arial, sans-serif;">
+       <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="100%" style="background-color: #f4f4f4; padding: 20px;">
+         <tr>
+           <td align="center">
+             <table role="presentation" cellspacing="0" cellpadding="0" border="0" width="600" style="max-width: 600px; background-color: #ffffff; border-radius: 8px; overflow: hidden; box-shadow: 0 4px 6px rgba(0,0,0,0.1);">
+               
+               <tr>
+                 <td style="background-color: #2E4A52; padding: 30px; text-align: center;">
+                   <h1 style="color: #ffffff; margin: 0; font-size: 24px; font-weight: bold;">Secure Auth</h1>
+                 </td>
+               </tr>
+ 
+               <tr>
+                 <td style="padding: 40px 30px; text-align: center;">
+                   <h2 style="color: #171717; font-size: 22px; font-weight: bold; margin: 0 0 15px 0;">Reset Password Request</h2>
+                   <p style="color: #4b5563; font-size: 16px; line-height: 1.6; margin: 0 0 30px 0;">
+                     You requested to reset your password. Click the button below to proceed. This link expires in 1 hour.
+                   </p>
+                   
+                   <a href="${resetLink}" style="display: inline-block; background-color: #D97757; color: #ffffff; font-weight: bold; text-decoration: none; padding: 14px 30px; border-radius: 6px; font-size: 16px;">
+                     Reset Password
+                   </a>
+ 
+                   <p style="margin-top: 30px; font-size: 13px; color: #6b7280;">
+                     If you did not request this, please ignore this email.<br>
+                     <br>
+                     <a href="${resetLink}" style="color: #2E4A52;">${resetLink}</a>
+                   </p>
+                 </td>
+               </tr>
+             </table>
+           </td>
+         </tr>
+       </table>
+     </body>
+     </html>
+   `;
+
+  // 3. Send Request via Native Fetch
+  try {
+    const response = await fetch("https://api.brevo.com/v3/smtp/email", {
+      method: "POST",
+      headers: {
+        accept: "application/json",
+        "api-key": apiKey,
+        "content-type": "application/json",
+      },
+      body: JSON.stringify({
+        sender: { name: "Secure Auth App", email: senderEmail },
+        to: [{ email: email }],
+        subject: "Action Required: Reset your password",
+        htmlContent: htmlContent,
+      }),
+    });
+
+    if (!response.ok) {
+      const errorData = await response.json();
+      console.error("❌ [BREVO API ERROR]", JSON.stringify(errorData, null, 2));
+      throw new Error(`Email service rejected request: ${response.statusText}`);
+    }
+
+    const data = await response.json();
+    return { success: true, messageId: data.messageId };
+  } catch (error) {
+    console.error("❌ Failed to send reset email:", error);
+    throw new Error("Failed to send reset email");
+  }
+}

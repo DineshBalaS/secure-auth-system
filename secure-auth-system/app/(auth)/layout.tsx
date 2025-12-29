@@ -58,9 +58,6 @@ export default function AuthLayout({
               <p className="text-lg font-medium text-gray-800">
                 &ldquo;Simplicity is the ultimate sophistication.&rdquo;
               </p>
-              <footer className="text-sm text-gray-600 font-medium">
-                &copy; {new Date().getFullYear()} Secure Auth Inc.
-              </footer>
             </blockquote>
           </div>
         </div>

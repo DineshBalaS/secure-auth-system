@@ -12,9 +12,9 @@
 
 - [x] **1.2 Dependency Installation:**
 
-  - **Core:** `prisma`, `@prisma/client`
+  - **Core:** `prisma`, `@prisma/client`, `@prisma/adapter-pg`.
   - **Security:** `argon2` (hashing), `jose` (JWT), `zod` (validation).
-  - **Email:** `resend`.
+  - **Email:** `nodemailer` (installed), `fetch` (used for Brevo API).
 
 - [x] **1.3 Database Setup:**
 
@@ -23,7 +23,7 @@
   - Generate Prisma Client (`prisma generate`).
 
 - [x] **1.4 Global Utilities:**
-  - Create `lib/db.ts` to export a singleton Prisma instance (prevents connection exhaustion in dev).
+  - Create `lib/db.ts` to export a Prisma instance with PG Adapter.
 
 ---
 
@@ -47,7 +47,7 @@
   - Implement `verifyToken(token)`: Validate signature and expiry.
 
 - [x] **2.4 Email Utility (Enhanced) (`lib/email/send-email.ts`):**
-  - **Unplanned Addition:** Replaced raw text emails with a branded, responsive HTML template using `Resend`.
+  - **Unplanned Addition:** Replaced raw text emails with a branded, responsive HTML template using `Brevo HTTP API`.
   - Implemented development mode fallback (logs to console).
 
 ---
@@ -59,7 +59,7 @@
 - [x] **3.1 Registration Endpoint (`/api/auth/register`):**
 
   - Validate input -> Check duplicates -> Hash password -> Create User -> Send Email.
-  - **Update:** Integrated with the new HTML email template.
+  - **Update:** Integrated with the new HTML email template via Brevo.
 
 - [x] **3.2 Verification Endpoint (`/api/auth/verify`):**
 
@@ -114,13 +114,17 @@
 
 **Target:** `lib/auth/*` and `lib/__tests__/*`
 
+- [x] **Test Files Created:**
+  - `lib/__tests__/password.test.ts`
+  - `lib/__tests__/session.test.ts`
+  - `lib/__tests__/validations.test.ts`
 - [x] Test: Verify `hashPassword` produces a different hash for the same password (salt check).
 - [x] Test: Verify `verifyToken` rejects expired tokens.
 - [x] Test: Verify Zod schemas reject invalid emails (e.g., "user@domain").
 
 ### 6.2 Integration Testing (The Flow)
 
-**Target:** API Routes (via Postman)
+**Target:** API Routes
 
 - [ ] **Scenario A (Register):** Send valid data. Expect 201 + Email sent.
 - [ ] **Scenario B (Duplicate):** Send same email again. Expect 409.
@@ -132,8 +136,8 @@
 **Target:** Full Application
 
 - [ ] **XSS Check:** Try injecting `<script>alert(1)</script>` into the email field during registration.
-- [ ] **Cookie Check:** Open Browser DevTools -> Application -> Cookies. Ensure `HttpOnly` flag is checked (Client JS cannot see it).
-- [ ] **Brute Force:** Spam the login endpoint. (Optional: Add rate limiting if time permits).
+- [ ] **Cookie Check:** Open Browser DevTools -> Application -> Cookies. Ensure `HttpOnly` flag is checked.
+- [ ] **Brute Force:** Spam the login endpoint.
 
 ---
 
@@ -141,6 +145,6 @@
 
 **Goal:** Live production build.
 
-- [ ] **7.1 Environment Variables:** Add `DATABASE_URL`, `JWT_SECRET`, `RESEND_API_KEY` to Vercel.
+- [ ] **7.1 Environment Variables:** Add `DATABASE_URL`, `JWT_SECRET`, `BREVO_API_KEY`, `SENDER_EMAIL` to Vercel/Production.
 - [ ] **7.2 Build Verification:** Ensure `next build` passes without type errors.
-- [ ] **7.3 Deploy:** Push to main -> Vercel Deployment.
+- [ ] **7.3 Deploy:** Push to main -> Deployment.
