@@ -85,7 +85,7 @@ function VerifyContent() {
         <div className="flex flex-col items-center justify-center py-4 space-y-4 animate-in fade-in zoom-in duration-300">
           <CheckCircle2 className="h-16 w-16 text-green-500" />
           <div className="space-y-2">
-            <h2 className="text-xl font-semibold text-gray-900">Verified!</h2>+{" "}
+            <h2 className="text-xl font-semibold text-gray-900">Verified!</h2>
             <p className="text-gray-600">{message}</p>
           </div>
           <Link
