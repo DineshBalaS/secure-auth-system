@@ -1,5 +1,6 @@
 "use client";
 
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { zodResolver } from "@hookform/resolvers/zod";
 import Link from "next/link";
@@ -23,6 +24,7 @@ interface APIErrorResponse {
 
 export function RegisterForm() {
   const router = useRouter();
+  const [duplicateEmail, setDuplicateEmail] = useState<string | null>(null);
 
   // Initialize React Hook Form with Zod Resolver
   const form = useForm<RegisterInput>({
@@ -44,6 +46,7 @@ export function RegisterForm() {
   const onSubmit = async (data: RegisterInput) => {
     // 1. Clear previous global server errors before new request
     setError("root.serverError", { message: "" });
+    setDuplicateEmail(null);
 
     try {
       const response = await fetch("/api/auth/register", {
@@ -73,7 +76,7 @@ export function RegisterForm() {
         }
         // Handle 409 Conflict (User already exists)
         else if (response.status === 409) {
-          setError("root.serverError", { message: errorResult.error });
+          setDuplicateEmail(data.email);
         }
         // Handle 500 or unknown errors
         else {
@@ -106,8 +109,25 @@ export function RegisterForm() {
         </p>
       </div>
 
-      {/* Global Server Error Alert */}
-      {errors.root?.serverError?.message && (
+      {/* Duplicate User Alert with Login Link */}
+      {duplicateEmail ? (
+        <div
+          className="flex items-center gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
+          role="alert"
+        >
+          <AlertTriangle className="h-5 w-5 flex-shrink-0" />
+          <div className="space-y-1">
+            <p>User with this email already exists.</p>
+            <Link
+              href={`/login?email=${encodeURIComponent(duplicateEmail)}`}
+              className="font-bold underline underline-offset-4 hover:text-red-900"
+            >
+              Want to login instead?
+            </Link>
+          </div>
+        </div>
+      ) : errors.root?.serverError?.message ? (
+        /* Global Server Error Alert (Fallback) */
         <div
           className="flex items-center gap-3 rounded-md border border-red-200 bg-red-50 p-3 text-sm text-red-700"
           role="alert"
@@ -115,7 +135,7 @@ export function RegisterForm() {
           <AlertTriangle className="h-5 w-5 flex-shrink-0" />
           <p>{errors.root.serverError.message}</p>
         </div>
-      )}
+      ) : null}
 
       <form onSubmit={handleSubmit(onSubmit)} className="space-y-6">
         {/* Email Field */}

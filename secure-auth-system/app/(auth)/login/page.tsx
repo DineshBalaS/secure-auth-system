@@ -10,6 +10,7 @@ interface LoginPageProps {
   // In Next.js 15+, searchParams is a Promise that must be awaited
   searchParams: Promise<{
     message?: string;
+    email?: string;
   }>;
 }
 
@@ -21,7 +22,7 @@ export default async function LoginPage(props: LoginPageProps) {
     <>
       {/* Screen reader only heading for accessibility structure */}
       <h1 className="sr-only">Login to SecureAuth</h1>
-      <LoginForm message={searchParams.message} />
+      <LoginForm message={searchParams.message} email={searchParams.email} />
     </>
   );
 }

@@ -20,15 +20,16 @@ interface APIErrorResponse {
 
 interface LoginFormProps {
   message?: string;
+  email?: string;
 }
 
-export function LoginForm({ message }: LoginFormProps) {
+export function LoginForm({ message, email }: LoginFormProps) {
   const router = useRouter();
 
   const form = useForm<LoginInput>({
     resolver: zodResolver(LoginSchema),
     defaultValues: {
-      email: "",
+      email: email || "",
       password: "",
     },
     mode: "onChange",
