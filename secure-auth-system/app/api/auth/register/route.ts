@@ -4,6 +4,7 @@ import { RegisterSchema } from "@/lib/validations";
 import { hashPassword } from "@/lib/auth/password";
 import { prisma } from "@/lib/db";
 import { sendVerificationEmail } from "@/lib/email/send-email";
+import { VERIFICATION_TOKEN_EXPIRY } from "@/lib/auth/session";
 
 export async function POST(req: Request) {
   try {
@@ -29,9 +30,9 @@ export async function POST(req: Request) {
       where: { email },
     });
 
-    if (existingUser) {
+    if (existingUser && existingUser.isVerified) {
       return NextResponse.json(
-        { error: "User with this email already exists" },
+        { error: "User with this email already exists" }, // Privacy note: In strict security, use generic msg
         { status: 409 }
       );
     }
@@ -43,7 +44,61 @@ export async function POST(req: Request) {
     // 32 bytes of random data converted to a hex string (64 chars)
     const verificationToken = crypto.randomBytes(32).toString("hex");
     // Set expiration to 24 hours from now
-    const expires = new Date(Date.now() + 24 * 60 * 60 * 1000);
+    const expires = new Date(Date.now() + VERIFICATION_TOKEN_EXPIRY);
+
+    // BRANCH A: Handle Unverified User (Idempotent Re-registration)
+    if (existingUser && !existingUser.isVerified) {
+      // RATE LIMIT CHECK: Prevent email bombing
+      // 1. Find the most recent token for this user
+      const latestToken = await prisma.verificationToken.findFirst({
+        where: { identifier: email },
+        orderBy: { expires: "desc" }, // The one expiring latest was created latest
+      });
+
+      if (latestToken) {
+        // 2. Reverse-engineer creation time (Expires - 24h)
+        const tokenBornAt =
+          latestToken.expires.getTime() - VERIFICATION_TOKEN_EXPIRY;
+        const timeSinceLastRequest = Date.now() - tokenBornAt;
+
+        // 3. Throttle: Limit to 1 request per 60 seconds
+        if (timeSinceLastRequest < 60 * 1000) {
+          return NextResponse.json(
+            { error: "Please wait 1 minute before requesting another email." },
+            { status: 429 } // Too Many Requests
+          );
+        }
+      }
+
+      // Transaction: Update Password + Cycle Tokens
+      await prisma.$transaction([
+        prisma.user.update({
+          where: { email },
+          data: { password: hashedPassword }, // Overwrite with NEW password
+        }),
+        prisma.verificationToken.deleteMany({
+          where: { identifier: email }, // Remove old/expired tokens
+        }),
+        prisma.verificationToken.create({
+          data: {
+            identifier: email,
+            token: verificationToken,
+            expires,
+            userId: existingUser.id, // Link to existing user ID
+          },
+        }),
+      ]);
+
+      // Send the email again
+      await sendVerificationEmail(email, verificationToken);
+
+      return NextResponse.json(
+        { message: "Confirmation email sent." },
+        { status: 200 }
+      );
+    }
+
+    // BRANCH B: New User Creation (Standard Flow)
 
     // 5. Atomic Creation (Transaction)
     // We create the User and the VerificationToken in a single database call.
@@ -63,14 +118,9 @@ export async function POST(req: Request) {
         },
       },
     });
-    console.log(`[REGISTER_DEBUG] User created! ID: ${newUser.id}`);
 
     // 6. Send Verification Email (Side Effect)
-    console.log(`[REGISTER_DEBUG] Starting Email Send for ${email}...`);
-    // We await this to ensure the user isn't left wondering if it worked,
-    // though in high-scale apps this might be offloaded to a background queue.
-    await sendVerificationEmail(newUser.email, verificationToken);
-    console.log("[REGISTER_DEBUG] Email sent successfully. Returning 201.");
+    await sendVerificationEmail(email, verificationToken);
 
     // 7. Success Response
     return NextResponse.json(
