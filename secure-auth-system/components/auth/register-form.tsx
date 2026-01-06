@@ -32,6 +32,7 @@ export function RegisterForm() {
     defaultValues: {
       email: "",
       password: "",
+      confirmPassword: "",
     },
     mode: "onBlur", // Validate fields when the user leaves them
   });
@@ -177,6 +178,29 @@ export function RegisterForm() {
           />
           {errors.password && (
             <p className="text-sm text-red-600">{errors.password.message}</p>
+          )}
+        </div>
+
+        {/* Confirm Password Field */}
+        <div className="space-y-2">
+          <label
+            htmlFor="confirmPassword"
+            className="block text-sm font-bold text-gray-900"
+          >
+            Confirm Password
+          </label>
+          <Input
+            id="confirmPassword"
+            type="password"
+            autoComplete="new-password"
+            placeholder="Re-enter your password"
+            {...register("confirmPassword")}
+            aria-invalid={!!errors.confirmPassword}
+          />
+          {errors.confirmPassword && (
+            <p className="text-sm text-red-600">
+              {errors.confirmPassword.message}
+            </p>
           )}
         </div>
 

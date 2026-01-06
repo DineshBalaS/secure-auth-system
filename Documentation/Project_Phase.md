@@ -33,8 +33,9 @@
 
 - [x] **2.1 Validation Schemas (`lib/validations.ts`):**
 
-  - Define Zod schema for Registration (email regex, password min length).
+  - Define Zod schema for Registration (email regex, password min length, confirm password match).
   - Define Zod schema for Login.
+  - **Update:** Added `ForgotPasswordSchema` and `ResetPasswordSchema` for recovery flow.
 
 - [x] **2.2 Password Utility (`lib/auth/password.ts`):**
 
@@ -48,6 +49,7 @@
 
 - [x] **2.4 Email Utility (Enhanced) (`lib/email/send-email.ts`):**
   - **Unplanned Addition:** Replaced raw text emails with a branded, responsive HTML template using `Brevo HTTP API`.
+  - Added `sendPasswordResetEmail` function for recovery flow.
   - Implemented development mode fallback (logs to console).
 
 ---
@@ -87,6 +89,7 @@
 - [x] **4.2 Auth Forms:**
 
   - Build `LoginForm` and `RegisterForm` components.
+  - **Update:** Added "Confirm Password" field to Registration and Reset forms.
   - Integrate `react-hook-form` with Zod resolvers.
   - Handle loading states and error messages (toast notifications).
 
@@ -96,21 +99,41 @@
 
 ---
 
-## Phase 5: Middleware & Security Hardening
+## Phase 5: Password Recovery System
+
+**Goal:** Enable users to reset lost passwords securely via email.
+
+- [x] **5.1 Database Schema:**
+
+  - Create `PasswordResetToken` model in `schema.prisma`.
+  - Ensure fields for `email`, `token`, `expires`, and composite unique key.
+
+- [x] **5.2 API Endpoints:**
+
+  - `/api/auth/forgot-password`: Generates token & sends HTML email via Brevo.
+  - `/api/auth/reset-password`: Validates token & updates user password.
+
+- [x] **5.3 Frontend Pages:**
+  - `/forgot-password`: Request link form.
+  - `/reset-password`: Set new password form (with token validation).
+
+---
+
+## Phase 6: Middleware & Security Hardening
 
 **Goal:** Protect routes at the edge level.
 
-- [ ] **5.1 Middleware Implementation (`middleware.ts`):**
+- [ ] **6.1 Middleware Implementation (`middleware.ts`):**
   - Define protected routes (`/dashboard`).
-  - Define public routes (`/login`, `/register`).
+  - Define public routes (`/login`, `/register`, `/forgot-password`, `/reset-password`).
   - **Logic:** If visiting protected route w/o token -> Redirect to Login.
   - **Logic:** If visiting login w/ token -> Redirect to Dashboard.
 
 ---
 
-## Phase 6: Testing Strategy (QA)
+## Phase 7: Testing Strategy (QA)
 
-### 6.1 Unit Testing (The Logic)
+### 7.1 Unit Testing (The Logic)
 
 **Target:** `lib/auth/*` and `lib/__tests__/*`
 
@@ -122,7 +145,7 @@
 - [x] Test: Verify `verifyToken` rejects expired tokens.
 - [x] Test: Verify Zod schemas reject invalid emails (e.g., "user@domain").
 
-### 6.2 Integration Testing (The Flow)
+### 7.2 Integration Testing (The Flow)
 
 **Target:** API Routes
 
@@ -130,21 +153,22 @@
 - [ ] **Scenario B (Duplicate):** Send same email again. Expect 409.
 - [ ] **Scenario C (Login Unverified):** Login immediately after register. Expect 403.
 - [ ] **Scenario D (Login Success):** Verify email, then login. Expect 200 + Set-Cookie header.
+- [ ] **Scenario E (Password Reset):** Request link -> Reset password -> Login with new password.
 
-### 6.3 Security Testing (The Attack)
+### 7.3 Security Testing (The Attack)
 
 **Target:** Full Application
 
-- [ ] **XSS Check:** Try injecting `<script>alert(1)</script>` into the email field during registration.
-- [ ] **Cookie Check:** Open Browser DevTools -> Application -> Cookies. Ensure `HttpOnly` flag is checked.
-- [ ] **Brute Force:** Spam the login endpoint.
+- [ ] **XSS Check:** Try injecting `<script>alert(1)</script>` into the email field.
+- [ ] **Cookie Check:** Check `HttpOnly` flag on session cookies.
+- [ ] **Rate Limiting:** (Future) Ensure password reset can't be spammed.
 
 ---
 
-## Phase 7: Deployment
+## Phase 8: Deployment
 
 **Goal:** Live production build.
 
-- [ ] **7.1 Environment Variables:** Add `DATABASE_URL`, `JWT_SECRET`, `BREVO_API_KEY`, `SENDER_EMAIL` to Vercel/Production.
-- [ ] **7.2 Build Verification:** Ensure `next build` passes without type errors.
-- [ ] **7.3 Deploy:** Push to main -> Deployment.
+- [ ] **8.1 Environment Variables:** Add `DATABASE_URL`, `JWT_SECRET`, `BREVO_API_KEY`, `SENDER_EMAIL` to Vercel/Production.
+- [ ] **8.2 Build Verification:** Ensure `next build` passes without type errors.
+- [ ] **8.3 Deploy:** Push to main -> Deployment.

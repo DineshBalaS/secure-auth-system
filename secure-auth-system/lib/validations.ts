@@ -3,14 +3,22 @@ import { z } from "zod";
 /**
  * Registration Schema
  * Used for: POST /api/auth/register
- * Constraints: Valid email, Password min 8 chars
+ * Constraints: Valid email, Password min 8 chars, Passwords must match
  */
-export const RegisterSchema = z.object({
-  email: z.string().email({ message: "Please enter a valid email address" }),
-  password: z
-    .string()
-    .min(8, { message: "Password must be at least 8 characters long" }),
-});
+export const RegisterSchema = z
+  .object({
+    email: z.string().email({ message: "Please enter a valid email address" }),
+    password: z
+      .string()
+      .min(8, { message: "Password must be at least 8 characters long" }),
+    confirmPassword: z
+      .string()
+      .min(1, { message: "Please confirm your password" }),
+  })
+  .refine((data) => data.password === data.confirmPassword, {
+    message: "Passwords do not match",
+    path: ["confirmPassword"],
+  });
 
 // Infer the TypeScript type from the schema
 export type RegisterInput = z.infer<typeof RegisterSchema>;
