@@ -1,7 +1,7 @@
 import { NextResponse } from "next/server";
 import { LoginSchema } from "@/lib/validations";
 import { verifyPassword } from "@/lib/auth/password";
-import { signToken } from "@/lib/auth/session";
+import { signToken, SESSION_MAX_AGE } from "@/lib/auth/session";
 import { prisma } from "@/lib/db";
 
 export async function POST(req: Request) {
@@ -82,7 +82,7 @@ export async function POST(req: Request) {
       secure: process.env.NODE_ENV === "production",
       sameSite: "strict",
       path: "/",
-      maxAge: 60 * 60 * 24, // 24 hours
+      maxAge: SESSION_MAX_AGE,
     });
 
     return response;
