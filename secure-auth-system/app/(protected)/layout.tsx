@@ -1,5 +1,6 @@
 import Link from "next/link";
-import { LogOut, ShieldCheck } from "lucide-react";
+import { ShieldCheck } from "lucide-react";
+import { LogoutButton } from "@/components/auth/logout-button";
 
 export default function ProtectedLayout({
   children,
@@ -21,14 +22,7 @@ export default function ProtectedLayout({
               </Link>
             </div>
             <div className="flex items-center">
-              {/* We will implement the actual logout logic button later */}
-              <button
-                disabled
-                className="flex items-center gap-2 rounded-md px-3 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50 hover:text-gray-900 dark:text-gray-300 dark:hover:bg-gray-800 dark:hover:text-white"
-              >
-                <LogOut className="h-4 w-4" />
-                Logout
-              </button>
+              <LogoutButton />
             </div>
           </div>
         </div>
