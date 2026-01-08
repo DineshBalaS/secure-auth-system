@@ -169,7 +169,47 @@ This document tracks all modifications, updates, and milestones in the project l
 
 ---
 
-## Current Status (as of 2026-01-02)
+
+#### **2026-01-06 - Registration Flow Enhancement (Zombie Fix)**
+
+- **Action**: Implemented idempotent registration logic for unverified accounts.
+- **Context**: Addressed an edge case where users who registered but failed to verify were effectively locked out. The system now allows these "zombie" accounts to re-register: it updates their password, cycles the verification token, and resends the email, subject to improper usage rate-limiting.
+- **Git Commit**: `6868dd3` (Merge) / `455bda6` - _safe to reset, zombie registration is fixed_
+  - **Author**: DineshbalaS
+  - **Changes**:
+    - **API Logic**: Updated `app/api/auth/register/route.ts` to detect existing unverified users and allow safe profile updates.
+    - **Refactoring**: Updated `lib/auth/session.ts` and `app/api/auth/login/route.ts` to align with refined session constants.
+
+---
+
+#### **2026-01-07 - Security Verification Suite**
+
+- **Action**: Implementation of specialized security unit tests.
+- **Context**: Validated the "brain" of the system against common attack vectors. Tests now explicitly verify that Argon2 hashing hides the password and that Zod schemas reject SQL injection and XSS payloads.
+- **Git Commit**: `e6fa26f` - _safe to reset, tested security_
+  - **Author**: DineshbalaS
+  - **Changes**:
+    - Created `lib/__tests__/security-verification.test.ts`:
+      - Test: Weak password rejection.
+      - Test: Argon2 consistency and non-reversibility.
+      - Test: Input sanitization (XSS/SQLi rejection).
+
+---
+
+#### **2026-01-08 - Dashboard Navigation & Logout Integration**
+
+- **Action**: Integrated Logout functionality into the protected dashboard.
+- **Context**: Completed the user session lifecycle by allowing users to securely sign out from the dashboard.
+- **Git Commit**: `a2a4c9b` - _safe to reset, just for rickroll purposes_ (Partial Feature Extraction)
+  - **Author**: DineshbalaS
+  - **Changes**:
+    - **Components**: Created/Updated `components/auth/logout-button.tsx` to handle client-side logout (API call + redirect).
+    - **Layout**: Updated `app/(protected)/layout.tsx` to include the verified `LogoutButton`.
+    - *Note*: Excluded temporary dashboard content (placeholder video) from documentation as requested.
+
+---
+
+## Current Status (as of 2026-01-08)
 
 - **Phase**: Middleware (Phase 6) - Pending
 - **Completed**:
@@ -178,12 +218,9 @@ This document tracks all modifications, updates, and milestones in the project l
   - **Phase 3: API Development (100%)**
   - **Phase 4: Frontend Implementation (100%)**
   - **Phase 5: Password Recovery (100%)**
-    - [x] Database Schema (PasswordResetToken)
-    - [x] API Endpoints (Forgot/Reset)
-    - [x] Frontend Forms (Request/Reset)
-    - [x] Email Integration (Brevo)
-  - **Phase 7: Testing Strategy (Partial)** (Renumbered from 6)
+  - **Phase 7: Testing Strategy** (Renumbered from 6)
     - [x] 7.1 Unit Testing (Logic Verification)
+    - [x] 7.2 Security Verification (Attack Simulation)
 - **Pending (Next Steps - Phase 6)**:
   - **6.1 Middleware Implementation**:
     - Create `middleware.ts` in the root.
@@ -192,4 +229,4 @@ This document tracks all modifications, updates, and milestones in the project l
 
 ---
 
-_Verified by Antigravity Agent - 2026-01-02_
+_Verified by Antigravity Agent - 2026-01-08_
