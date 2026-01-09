@@ -62,6 +62,7 @@
 
   - Validate input -> Check duplicates -> Hash password -> Create User -> Send Email.
   - **Update:** Integrated with the new HTML email template via Brevo.
+  - **Update:** Added idempotent logic to handle "Zombie" (unverified) re-registrations (`6868dd3`).
 
 - [x] **3.2 Verification Endpoint (`/api/auth/verify`):**
 
@@ -73,7 +74,7 @@
 
 - [x] **3.4 Session & Logout:**
   - `/api/auth/me`: Decrypt cookie and return user data.
-  - `/api/auth/logout`: Delete cookie.
+  - `/api/auth/logout`: Delete cookie and terminate session.
 
 ---
 
@@ -84,7 +85,7 @@
 - [x] **4.1 Layouts:**
 
   - Create `(auth)/layout.tsx` for centered forms.
-  - Create `(protected)/layout.tsx` with Navbar and Logout button.
+  - Create `(protected)/layout.tsx` with Navbar and Logout button (`a2a4c9b`).
 
 - [x] **4.2 Auth Forms:**
 
@@ -92,6 +93,7 @@
   - **Update:** Added "Confirm Password" field to Registration and Reset forms.
   - Integrate `react-hook-form` with Zod resolvers.
   - Handle loading states and error messages (toast notifications).
+  - Built `LogoutButton` for dashboard integration.
 
 - [x] **4.3 Pages:**
   - Assemble `/login`, `/register`, and `/verify` pages.
@@ -145,7 +147,16 @@
 - [x] Test: Verify `verifyToken` rejects expired tokens.
 - [x] Test: Verify Zod schemas reject invalid emails (e.g., "user@domain").
 
-### 7.2 Integration Testing (The Flow)
+### 7.2 Security Verification (The Attack)
+
+**Target:** `lib/__tests__/security-verification.test.ts`
+
+- [x] **Security Test Suite:** Created `lib/__tests__/security-verification.test.ts` (`e6fa26f`).
+- [x] Test: Reject Weak Passwords.
+- [x] Test: Verify Argon2 Consistency & Irreversibility.
+- [x] Test: Input Sanitization (XSS and SQLi rejection).
+
+### 7.3 Integration Testing (The Flow)
 
 **Target:** API Routes
 
@@ -155,12 +166,11 @@
 - [ ] **Scenario D (Login Success):** Verify email, then login. Expect 200 + Set-Cookie header.
 - [ ] **Scenario E (Password Reset):** Request link -> Reset password -> Login with new password.
 
-### 7.3 Security Testing (The Attack)
+### 7.4 Additional Security Checks
 
 **Target:** Full Application
 
-- [ ] **XSS Check:** Try injecting `<script>alert(1)</script>` into the email field.
-- [ ] **Cookie Check:** Check `HttpOnly` flag on session cookies.
+- [ ] **Cookie Check:** Check `HttpOnly` flag on session cookies (Verified via Logic Review, Pending auto-test).
 - [ ] **Rate Limiting:** (Future) Ensure password reset can't be spammed.
 
 ---
