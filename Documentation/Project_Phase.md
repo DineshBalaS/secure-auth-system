@@ -125,11 +125,12 @@
 
 **Goal:** Protect routes at the edge level.
 
-- [ ] **6.1 Middleware Implementation (`middleware.ts`):**
-  - Define protected routes (`/dashboard`).
-  - Define public routes (`/login`, `/register`, `/forgot-password`, `/reset-password`).
-  - **Logic:** If visiting protected route w/o token -> Redirect to Login.
-  - **Logic:** If visiting login w/ token -> Redirect to Dashboard.
+- [x] **6.1 Proxy Implementation (`proxy.ts`):**
+  - **Note:** Replaces legacy `middleware.ts` as per Next.js 15+ standards.
+  - Define bucketed routes (Protected: `/dashboard` vs Public: `/login`, etc.).
+  - **Logic:** Validate session via `verifyToken` (at the edge).
+  - **Logic:** Redirect unauthenticated users from Protected routes to Login.
+  - **Logic:** Redirect authenticated users from Auth pages to Dashboard.
 
 ---
 
