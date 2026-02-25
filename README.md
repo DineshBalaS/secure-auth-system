@@ -8,13 +8,13 @@ This project is a robust, security-focused authentication system built from scra
 ### Core Framework
 - **Framework**: Next.js 15 (App Router)
 - **Language**: TypeScript
-- **Deployment**: Vercel
+- **Deployment**: Render
 
 ### Backend & Database
 - **Database**: PostgreSQL (via Neon or Supabase)
 - **ORM**: Prisma
 - **Validation**: Zod (Server-side validation)
-- **Email Service**: Resend API
+- **Email Service**: Brevo
 
 ### Security & Cryptography
 - **Hashing**: Argon2id (`argon2` library) – Memory-hard, resistant to GPU attacks.
