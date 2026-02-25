@@ -1,3 +1,5 @@
+import ClickCounter from "@/components/dashboard/click-counter";
+
 export default function Dashboard() {
   return (
     <div className="flex min-h-[80vh] flex-col items-center justify-center p-8 bg-neutral-950">
@@ -6,18 +8,12 @@ export default function Dashboard() {
           Welcome to your Dashboard
         </h1>
         <p className="text-neutral-400">
-          We have prepared a special introductory video for you.
+          Take a break while your environment sets up.
         </p>
 
-        {/* Responsive Video Container (Aspect Ratio 16:9) */}
-        <div className="relative w-full overflow-hidden rounded-xl border border-neutral-800 shadow-2xl pt-[56.25%] bg-black">
-          <iframe
-            className="absolute top-0 left-0 w-full h-full"
-            src="https://www.youtube.com/embed/dQw4w9WgXcQ?autoplay=1&controls=0&modestbranding=1&loop=1&playlist=dQw4w9WgXcQ"
-            title="Important Dashboard Update"
-            allow="accelerometer; autoplay; clipboard-write; encrypted-media; gyroscope; picture-in-picture"
-            allowFullScreen
-          />
+        {/* Dashboard Tools/Widgets Container */}
+        <div className="w-full pt-8">
+          <ClickCounter />
         </div>
       </div>
     </div>
